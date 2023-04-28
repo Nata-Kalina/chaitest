@@ -9,7 +9,7 @@ function sleep(ms) {
 
 chai.should();
 
-(async () => {
+async () => {
   describe("Functional Tests with Puppeteer", function () {
     let browser = null;
     let page = null;
@@ -49,8 +49,8 @@ chai.should();
         this.listPeople.should.not.equal(null);
       });
       it("should create a person record given name and age", async function () {
-        await this.nameField.type("Fred");
-        await this.ageField.type("10");
+        await this.nameField.type("Anna");
+        await this.ageField.type("18");
         await this.addPerson.click();
         await sleep(200);
         const resultData = await (
@@ -62,15 +62,35 @@ chai.should();
         this.lastIndex = index;
       });
       it("should not create a person record without an age", async function () {
-        // your code goes here.  Hint: to clear the age field, you need the line
-        // await page.$eval("#age", (el) => (el.value = "")); 
+        await this.nameField.type("Anna");
+        await this.ageField.type("");
+        await this.addPerson.click();
+        await sleep(200);
+        const result = await this.resultHandle
+          .getProperty("textContent")
+          .jsonValue();
+        console.log("Answer #2, result is ", result);
+        result.should.include("Please provide age");
       });
       it("should return the entries just created", async function () {
-         // your code goes here
+        await this.listPeople.click();
+        await sleep(200);
+        const result = await (
+          await this.resultHandle.getProperty("textContent")
+        ).jsonValue();
+        console.log("Answer #3, result is", result);
+        result.should.include("Anna");
       });
       it("should return the last entry.", async function () {
-         // your code goes here
+        await this.personIndex.type(`${this.lastIndex}`);
+        await this.getPerson.click();
+        await sleep(200);
+        const result = await (
+          await this.resultHandle.getProperty("textContent")
+        ).jsonValue();
+        console.log("Answer #4, result is ", result);
+        result.should.include("Anna");
       });
     });
   });
-})();
+};
